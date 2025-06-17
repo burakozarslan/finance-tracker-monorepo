@@ -1,6 +1,8 @@
 # apps/api/Dockerfile
 FROM node:18-alpine AS base
 WORKDIR /app
+# Enable pnpm
+RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
