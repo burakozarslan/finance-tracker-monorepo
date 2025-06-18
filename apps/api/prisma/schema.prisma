@@ -1,15 +1,60 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // You can change this to "mysql", "sqlite", etc.
   url      = env("DATABASE_URL")
+}
+
+// Enum for transaction/category type
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash") // Map to password_hash column in DB
+  fullName     String?  @map("full_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  categories   Category[] // Relation field: a user can have many categories
+  transactions Transaction[] // Relation field: a user can have many transactions
+
+  @@map("users") // Map the model name to the 'users' table in the DB
+}
+
+model Category {
+  id        String          @id @default(uuid())
+  userId    String          @map("user_id") // Foreign key to User
+  name      String
+  type      TransactionType // Enum type for category
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id]) // Relation field: belongs to one User
+  transactions Transaction[] // Relation field: a category can have many transactions
+
+  @@unique([userId, name]) // A user cannot have two categories with the exact same name
+  @@map("categories") // Map the model name to the 'categories' table in the DB
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  userId          String          @map("user_id") // Foreign key to User
+  categoryId      String          @map("category_id") // Foreign key to Category
+  amount          Decimal         @db.Decimal(10, 2) // Precision and scale for financial data
+  description     String?
+  transactionDate DateTime        @map("transaction_date") @db.Date // Store only date without time
+  type            TransactionType // Enum type for transaction (can be inferred from category, but good for quick filtering)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  user     User     @relation(fields: [userId], references: [id]) // Relation field: belongs to one User
+  category Category @relation(fields: [categoryId], references: [id]) // Relation field: belongs to one Category
+
+  @@map("transactions") // Map the model name to the 'transactions' table in the DB
 }
