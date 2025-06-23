@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
@@ -10,6 +9,11 @@ export class PrismaService
   constructor() {
     super({
       log: ['query', 'info', 'warn', 'error'],
+      omit: {
+        user: {
+          passwordHash: true,
+        },
+      },
     });
   }
 
