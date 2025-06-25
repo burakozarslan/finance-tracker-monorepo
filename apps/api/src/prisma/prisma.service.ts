@@ -12,6 +12,8 @@ export class PrismaService
       omit: {
         user: {
           passwordHash: true,
+          updatedAt: true,
+          createdAt: true,
         },
       },
     });
