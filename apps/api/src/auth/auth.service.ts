@@ -9,7 +9,6 @@ import { hashPassword } from './auth.util';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
   ) {}
 
