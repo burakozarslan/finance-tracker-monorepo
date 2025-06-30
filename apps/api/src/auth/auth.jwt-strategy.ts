@@ -26,13 +26,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ]),
       ignoreExpiration: false,
       secretOrKey: jwtSecret,
+      passReqToCallback: true,
     });
   }
 
   async validate(req: ExpressRequest, payload: { sub: User['id'] }) {
     const user = await this.userService.getUserById(payload.sub);
     // Check if user account has been removed or suspended
-    if (!user || user.createdAt) {
+    if (!user || user.isSuspended) {
       // Clear cookie
       (req.res as ExpressResponse).clearCookie(
         authTokenName,
