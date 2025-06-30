@@ -9,13 +9,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import type { LoginDto, RegisterDto } from './auth.dto';
 import { hashPassword, comparePassword } from './auth.util';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
+
+  async signToken(user: { id: User['id'] }) {
+    const payload = { sub: user.id };
+    const token = await this.jwtService.signAsync(payload);
+    return token;
+  }
 
   async registerUserOrThrow(dto: RegisterDto) {
     const existing = await this.prisma.user.findFirst({
