@@ -9,13 +9,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import type { LoginDto, RegisterDto } from './auth.dto';
 import { hashPassword, comparePassword } from './auth.util';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
+
+  async signToken(user: { id: User['id'] }) {
+    const payload = { sub: user.id };
+    const token = await this.jwtService.signAsync(payload);
+    return token;
+  }
 
   async registerUserOrThrow(dto: RegisterDto) {
     const existing = await this.prisma.user.findFirst({
@@ -45,6 +54,7 @@ export class AuthService {
         id: true,
         fullName: true,
         email: true,
+        isSuspended: true,
         // Select globally excluded passwordHash manually since we need for password comparison
         passwordHash: true,
       },
@@ -56,6 +66,8 @@ export class AuthService {
       existing.passwordHash,
     );
     if (!isPasswordMatch) throw new UnauthorizedException('Wrong credentials');
+    // Check if user is suspended
+    if (existing.isSuspended) throw new UnauthorizedException('User suspended');
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...user } = existing;
