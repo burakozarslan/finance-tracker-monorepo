@@ -18,6 +18,7 @@ model User {
   email        String   @unique
   passwordHash String   @map("password_hash") // Map to password_hash column in DB
   fullName     String?  @map("full_name")
+  isSuspended  Boolean  @default(false) @map("is_suspended")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
