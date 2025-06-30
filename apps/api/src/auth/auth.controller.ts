@@ -51,7 +51,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('status@')
+  @Get('status')
   status(@Request() req: ExpressRequest) {
     return req.user;
   }
