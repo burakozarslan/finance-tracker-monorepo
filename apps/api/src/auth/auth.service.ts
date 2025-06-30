@@ -54,6 +54,7 @@ export class AuthService {
         id: true,
         fullName: true,
         email: true,
+        isSuspended: true,
         // Select globally excluded passwordHash manually since we need for password comparison
         passwordHash: true,
       },
@@ -65,6 +66,8 @@ export class AuthService {
       existing.passwordHash,
     );
     if (!isPasswordMatch) throw new UnauthorizedException('Wrong credentials');
+    // Check if user is suspended
+    if (existing.isSuspended) throw new UnauthorizedException('User suspended');
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...user } = existing;
