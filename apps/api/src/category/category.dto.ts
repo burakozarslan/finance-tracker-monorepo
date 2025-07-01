@@ -11,3 +11,11 @@ export class CreateCategoryDto {
   @IsString()
   type: TransactionType;
 }
+
+export class DeleteCategoryDto {
+  @IsString()
+  id: string;
+
+  @IsString()
+  userId: string;
+}
