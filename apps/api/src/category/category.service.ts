@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCategoryDto } from './category.dto';
+import { CreateCategoryDto, DeleteCategoryDto } from './category.dto';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -22,6 +22,16 @@ export class CategoryService {
       data: {
         name: dto.name,
         type: dto.type,
+        userId: dto.userId,
+      },
+    });
+    return category;
+  }
+
+  async deleteCategory(dto: DeleteCategoryDto) {
+    const category = await this.prismaService.category.delete({
+      where: {
+        id: dto.id,
         userId: dto.userId,
       },
     });
