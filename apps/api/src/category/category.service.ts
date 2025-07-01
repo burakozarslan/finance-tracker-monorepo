@@ -15,4 +15,15 @@ export class CategoryService {
     });
     return categories;
   }
+
+  async createCategory(dto: CreateCategoryDto) {
+    const category = await this.prismaService.category.create({
+      data: {
+        name: dto.name,
+        type: dto.type,
+        userId: dto.userId,
+      },
+    });
+    return category;
+  }
 }
