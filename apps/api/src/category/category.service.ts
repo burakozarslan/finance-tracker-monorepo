@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './category.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
@@ -17,6 +17,7 @@ export class CategoryService {
   }
 
   async createCategory(dto: CreateCategoryDto) {
+    // TODO: Handle unique constraints somehow
     const category = await this.prismaService.category.create({
       data: {
         name: dto.name,
