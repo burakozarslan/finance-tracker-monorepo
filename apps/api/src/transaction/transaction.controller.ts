@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
@@ -13,7 +12,10 @@ import { TransactionService } from './transaction.service';
 import { UpdateTransactionDto, CreateTransactionDto } from './transaction.dto';
 import { JwtAuthGuard } from 'src/auth/auth.jwt-guard';
 import { User } from 'src/user/user.decorator';
-import type { User as PrismaUser } from '@prisma/client';
+import type {
+  User as PrismaUser,
+  Transaction as PrismaTransaction,
+} from '@prisma/client';
 
 @UseGuards(JwtAuthGuard)
 @Controller('transactions')
@@ -40,28 +42,34 @@ export class TransactionController {
     @User() user: PrismaUser,
     @Query() query: { category: string },
   ) {
-    const transactions = await this.transactionService.findManyByUserId(
-      user.id,
-      query.category,
-    );
-    return transactions;
+    return this.transactionService.findManyByUserId(user.id, query.category);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    // return this.transactionService.findOne(+id);
+  async findOne(
+    @Param('id') id: PrismaTransaction['id'],
+    @User() user: PrismaUser,
+  ) {
+    return this.transactionService.findOne(user.id, id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
-  ) {
-    return this.transactionService.update(+id, updateTransactionDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateTransactionDto: UpdateTransactionDto,
+  // ) {
+  //   return this.transactionService.update(+id, updateTransactionDto);
+  // }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    // return this.transactionService.remove(+id);
+  async delete(
+    @Param('id') id: PrismaTransaction['id'],
+    @User() user: PrismaUser,
+  ) {
+    const transaction = await this.transactionService.delete(user.id, id);
+    return {
+      message: 'Transaction has been deleted',
+      transaction,
+    };
   }
 }
