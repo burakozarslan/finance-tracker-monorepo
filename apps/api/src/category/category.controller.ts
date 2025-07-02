@@ -23,24 +23,19 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async getCategoriesByUserId(
-    @Req() req: ExpressRequest,
-    @User() user: PrismaUser,
-  ) {
-    const categories = await this.categoryService.getCategoriesByUserId(
-      user.id,
-    );
+  async findManyByUserId(@Req() req: ExpressRequest, @User() user: PrismaUser) {
+    const categories = await this.categoryService.findManyByUserId(user.id);
     return categories;
   }
 
   @Post('create')
-  async createCategory(
+  async create(
     // Omit userId field from input as we obtain it from Express request object
     @Body() input: CreateCategoryInputDto,
     @User() user: PrismaUser,
   ) {
     const data = { ...input, userId: user.id };
-    const category = await this.categoryService.createCategory(data);
+    const category = await this.categoryService.create(data);
     return {
       message: 'Category successfully created',
       category,
@@ -48,12 +43,12 @@ export class CategoryController {
   }
 
   @Delete('delete')
-  async deleteCategory(
+  async delete(
     @Body() input: DeleteCategoryInputDto,
     @User() user: PrismaUser,
   ) {
     const data = { ...input, userId: user.id };
-    const category = await this.categoryService.deleteCategory(data);
+    const category = await this.categoryService.delete(data);
     return {
       message: `Category has been deleted`,
       category,

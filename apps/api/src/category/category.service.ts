@@ -7,7 +7,7 @@ import { User } from '@prisma/client';
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getCategoriesByUserId(userId: User['id']) {
+  async findManyByUserId(userId: User['id']) {
     const categories = await this.prismaService.category.findMany({
       where: {
         userId,
@@ -16,7 +16,7 @@ export class CategoryService {
     return categories;
   }
 
-  async createCategory(data: CreateCategoryData) {
+  async create(data: CreateCategoryData) {
     // TODO: Handle unique constraints somehow
     const category = await this.prismaService.category.create({
       data: {
@@ -28,10 +28,10 @@ export class CategoryService {
     return category;
   }
 
-  async deleteCategory(data: DeleteCategoryData) {
+  async delete(data: DeleteCategoryData) {
     const category = await this.prismaService.category.delete({
       where: {
-        id:data.id,
+        id: data.id,
         userId: data.userId,
       },
     });
