@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import type { CreateCategoryData, DeleteCategoryData } from './category.dto';
-import { User } from '@prisma/client';
+import type { CreateCategoryDto, DeleteCategoryDto } from './category.dto';
+import { User as PrismaUser } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findManyByUserId(userId: User['id']) {
+  async findManyByUserId(userId: PrismaUser['id']) {
     const categories = await this.prismaService.category.findMany({
       where: {
         userId,
@@ -16,23 +16,23 @@ export class CategoryService {
     return categories;
   }
 
-  async create(data: CreateCategoryData) {
+  async create(userId: PrismaUser['id'], dto: CreateCategoryDto) {
     // TODO: Handle unique constraints somehow
     const category = await this.prismaService.category.create({
       data: {
-        name: data.name,
-        type: data.type,
-        userId: data.userId,
+        name: dto.name,
+        type: dto.type,
+        userId,
       },
     });
     return category;
   }
 
-  async delete(data: DeleteCategoryData) {
+  async delete(userId: PrismaUser['id'], dto: DeleteCategoryDto) {
     const category = await this.prismaService.category.delete({
       where: {
-        id: data.id,
-        userId: data.userId,
+        id: dto.id,
+        userId,
       },
     });
     return category;

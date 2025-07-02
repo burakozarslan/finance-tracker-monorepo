@@ -12,10 +12,7 @@ import { Request as ExpressRequest } from 'express';
 import { User as PrismaUser } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/auth.jwt-guard';
 import { User } from 'src/user/user.decorator';
-import type {
-  CreateCategoryInputDto,
-  DeleteCategoryInputDto,
-} from './category.dto';
+import type { CreateCategoryDto, DeleteCategoryDto } from './category.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
@@ -31,11 +28,10 @@ export class CategoryController {
   @Post('create')
   async create(
     // Omit userId field from input as we obtain it from Express request object
-    @Body() input: CreateCategoryInputDto,
+    @Body() dto: CreateCategoryDto,
     @User() user: PrismaUser,
   ) {
-    const data = { ...input, userId: user.id };
-    const category = await this.categoryService.create(data);
+    const category = await this.categoryService.create(user.id, dto);
     return {
       message: 'Category successfully created',
       category,
@@ -43,12 +39,9 @@ export class CategoryController {
   }
 
   @Delete('delete')
-  async delete(
-    @Body() input: DeleteCategoryInputDto,
-    @User() user: PrismaUser,
-  ) {
+  async delete(@Body() input: DeleteCategoryDto, @User() user: PrismaUser) {
     const data = { ...input, userId: user.id };
-    const category = await this.categoryService.delete(data);
+    const category = await this.categoryService.delete(user.id, data);
     return {
       message: `Category has been deleted`,
       category,
