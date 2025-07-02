@@ -11,11 +11,7 @@ import type {
 export class TransactionService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(
-    userId: PrismaUser['id'],
-    categoryId: PrismaCategory['id'],
-    dto: CreateTransactionDto,
-  ) {
+  async create(userId: PrismaUser['id'], dto: CreateTransactionDto) {
     // Check if category exists
     const category = await this.prismaService.category.findFirst({
       where: {
@@ -32,7 +28,6 @@ export class TransactionService {
       data: {
         ...dto,
         userId,
-        categoryId,
       },
     });
     return transaction;
