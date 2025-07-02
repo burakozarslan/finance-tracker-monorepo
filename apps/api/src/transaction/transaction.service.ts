@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UpdateTransactionDto, CreateTransactionDto } from './transaction.dto';
+import { CreateTransactionDto } from './transaction.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import type {
   User as PrismaUser,
@@ -60,11 +60,12 @@ export class TransactionService {
     return transaction;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    return `This action updates a #${id} transaction`;
-  }
+  // TODO: Do update
+  // update(id: number, updateTransactionDto: UpdateTransactionDto) {
+  //   return `This action updates a #${id} transaction`;
+  // }
 
-  remove(userId: PrismaUser['id'], id: PrismaTransaction['id']) {
+  delete(userId: PrismaUser['id'], id: PrismaTransaction['id']) {
     const transaction = this.prismaService.transaction.delete({
       where: {
         id,
