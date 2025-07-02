@@ -16,23 +16,23 @@ export class CategoryService {
     return categories;
   }
 
-  async createCategory(dto: CreateCategoryData) {
+  async createCategory(data: CreateCategoryData) {
     // TODO: Handle unique constraints somehow
     const category = await this.prismaService.category.create({
       data: {
-        name: dto.name,
-        type: dto.type,
-        userId: dto.userId,
+        name: data.name,
+        type: data.type,
+        userId: data.userId,
       },
     });
     return category;
   }
 
-  async deleteCategory(dto: DeleteCategoryData) {
+  async deleteCategory(data: DeleteCategoryData) {
     const category = await this.prismaService.category.delete({
       where: {
-        id: dto.id,
-        userId: dto.userId,
+        id:data.id,
+        userId: data.userId,
       },
     });
     return category;
