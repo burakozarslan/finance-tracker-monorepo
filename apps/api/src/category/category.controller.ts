@@ -33,7 +33,7 @@ export class CategoryController {
   ) {
     const category = await this.categoryService.create(user.id, dto);
     return {
-      message: 'Category successfully created',
+      message: 'Category has been created',
       category,
     };
   }

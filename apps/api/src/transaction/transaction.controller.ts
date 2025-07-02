@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { UpdateTransactionDto, CreateTransactionDto } from './transaction.dto';
@@ -19,7 +20,7 @@ import type { User as PrismaUser } from '@prisma/client';
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  @Post()
+  @Post('create')
   async create(
     @Body() createTransactionDto: CreateTransactionDto,
     @User() user: PrismaUser,
@@ -35,13 +36,20 @@ export class TransactionController {
   }
 
   @Get()
-  findAll() {
-    // return this.transactionService.findAll();
+  async findManyByUserId(
+    @User() user: PrismaUser,
+    @Query() query: { category: string },
+  ) {
+    const transactions = await this.transactionService.findManyByUserId(
+      user.id,
+      query.category,
+    );
+    return transactions;
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.transactionService.findOne(+id);
+    // return this.transactionService.findOne(+id);
   }
 
   @Patch(':id')
@@ -54,6 +62,6 @@ export class TransactionController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.transactionService.remove(+id);
+    // return this.transactionService.remove(+id);
   }
 }
