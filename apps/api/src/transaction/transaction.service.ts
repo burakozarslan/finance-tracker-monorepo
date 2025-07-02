@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateTransactionDto, CreateTransactionDto } from './transaction.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import type {
@@ -11,8 +11,31 @@ import type {
 export class TransactionService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  async create(
+    userId: PrismaUser['id'],
+    categoryId: PrismaCategory['id'],
+    dto: CreateTransactionDto,
+  ) {
+    // Check if category exists
+    const category = await this.prismaService.category.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (!category) throw new BadRequestException('Category is invalid');
+
+    // Check if transaction types match
+    if (category.type !== dto.type)
+      throw new BadRequestException('Transaction type is invalid');
+
+    const transaction = await this.prismaService.transaction.create({
+      data: {
+        ...dto,
+        userId,
+        categoryId,
+      },
+    });
+    return transaction;
   }
 
   async findManyByUserId(userId: PrismaUser['id']) {
