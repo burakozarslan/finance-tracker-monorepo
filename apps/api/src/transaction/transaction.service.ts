@@ -15,6 +15,7 @@ export class TransactionService {
     // Check if category exists
     const category = await this.prismaService.category.findFirst({
       where: {
+        id: dto.categoryId,
         userId,
       },
     });
@@ -33,28 +34,27 @@ export class TransactionService {
     return transaction;
   }
 
-  async findManyByUserId(userId: PrismaUser['id']) {
+  async findManyByUserId(
+    userId: PrismaUser['id'],
+    categoryName: PrismaCategory['name'],
+  ) {
     const transactions = await this.prismaService.transaction.findMany({
       where: {
         userId,
+        category: {
+          // filter by category
+          name: categoryName,
+        },
       },
     });
     return transactions;
   }
 
-  async findManyByCategoryId(categoryId: PrismaCategory['id']) {
-    const transactions = await this.prismaService.transaction.findMany({
-      where: {
-        categoryId,
-      },
-    });
-    return transactions;
-  }
-
-  async findOne(id: PrismaTransaction['id']) {
+  async findOne(userId: PrismaUser['id'], id: PrismaTransaction['id']) {
     const transaction = await this.prismaService.transaction.findFirstOrThrow({
       where: {
         id,
+        userId,
       },
     });
     return transaction;
@@ -64,10 +64,11 @@ export class TransactionService {
     return `This action updates a #${id} transaction`;
   }
 
-  remove(id: PrismaTransaction['id']) {
+  remove(userId: PrismaUser['id'], id: PrismaTransaction['id']) {
     const transaction = this.prismaService.transaction.delete({
       where: {
         id,
+        userId,
       },
     });
     return transaction;
