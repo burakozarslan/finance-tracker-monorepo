@@ -1,10 +1,8 @@
 import { IsString } from 'class-validator';
 import { TransactionType } from '@prisma/client';
+import { User as PrismaUser } from '@prisma/client';
 
-export class CreateCategoryDto {
-  @IsString()
-  userId: string;
-
+export class CreateCategoryInputDto {
   @IsString()
   name: string;
 
@@ -12,10 +10,15 @@ export class CreateCategoryDto {
   type: TransactionType;
 }
 
-export class DeleteCategoryDto {
-  @IsString()
-  id: string;
+export interface CreateCategoryData extends CreateCategoryInputDto {
+  userId: string
+}
 
+export class DeleteCategoryInputDto {
   @IsString()
-  userId: string;
+  id: PrismaUser['id'];
+}
+
+export interface DeleteCategoryData extends DeleteCategoryInputDto {
+  userId: PrismaUser['id'] 
 }
