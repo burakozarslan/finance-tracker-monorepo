@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateCategoryDto, DeleteCategoryDto } from './category.dto';
+import type { CreateCategoryData, DeleteCategoryData } from './category.dto';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class CategoryService {
     return categories;
   }
 
-  async createCategory(dto: CreateCategoryDto) {
+  async createCategory(dto: CreateCategoryData) {
     // TODO: Handle unique constraints somehow
     const category = await this.prismaService.category.create({
       data: {
@@ -28,7 +28,7 @@ export class CategoryService {
     return category;
   }
 
-  async deleteCategory(dto: DeleteCategoryDto) {
+  async deleteCategory(dto: DeleteCategoryData) {
     const category = await this.prismaService.category.delete({
       where: {
         id: dto.id,
