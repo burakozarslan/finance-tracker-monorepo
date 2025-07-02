@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User as PrismaUser } from '@prisma/client';
+import { User as PrismaUser, Category as PrismaCategory } from '@prisma/client';
 import { UpdateTransactionDto, CreateTransactionDto } from './transaction.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -11,10 +11,19 @@ export class TransactionService {
     return 'This action adds a new transaction';
   }
 
-  findManyByUserId(userId: PrismaUser['id']) {
+  async findManyByUserId(userId: PrismaUser['id']) {
     const transactions = await this.prismaService.transaction.findMany({
       where: {
         userId,
+      },
+    });
+    return transactions;
+  }
+
+  async findManyByCategoryId(categoryId: PrismaCategory['id']) {
+    const transactions = await this.prismaService.transaction.findMany({
+      where: {
+        categoryId,
       },
     });
     return transactions;
